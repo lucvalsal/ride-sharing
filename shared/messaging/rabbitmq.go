@@ -43,6 +43,18 @@ func NewRabbitMQ(uri string) (*RabbitMQ, error) {
 type MessageHandler func(context.Context, amqp.Delivery) error
 
 func (r *RabbitMQ) ConsumeMessages(queueName string, handler MessageHandler) error {
+	// Prefetch count set to 1 for fair dispatch
+	// Stops RabbitMQ from sending messages to a service until it has
+	// acknowledged the previous one
+	err := r.Channel.Qos(
+		1, // prefetchCount
+		0,
+		false,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to set Qos: %v", err)
+	}
+
 	msgs, err := r.Channel.Consume(
 		queueName, // queue
 		"",        // consumer
@@ -64,8 +76,19 @@ func (r *RabbitMQ) ConsumeMessages(queueName string, handler MessageHandler) err
 			log.Printf("Received a message: %s", msg.Body)
 
 			if err := handler(ctx, msg); err != nil {
-				log.Fatalf("failed to handle the message :%v", err)
+				log.Printf("ERROR: Failed to handle message: %v. Message Body: %s", err, msg.Body)
+
+				if nackErr := msg.Nack(false, false); nackErr != nil {
+					log.Printf("ERROR: Failed to Nack message: %v", nackErr)
+				}
+
+				continue
 			}
+
+			if ackErr := msg.Ack(false); ackErr != nil {
+				log.Printf("ERROR: Failed to Ack message: %v. Message body: %s", ackErr, msg.Body)
+			}
+
 		}
 	}()
 
