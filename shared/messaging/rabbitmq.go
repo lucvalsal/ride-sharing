@@ -137,7 +137,7 @@ func (r *RabbitMQ) setupExchangesAndQueues() error {
 	}
 
 	if err := r.declareAndBindQueue(
-		"find_available_drivers",
+		FindAvailableDriversQueue,
 		[]string{
 			contracts.TripEventCreated,
 			contracts.TripEventDriverNotInterested,
