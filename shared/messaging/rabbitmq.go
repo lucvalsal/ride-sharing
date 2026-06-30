@@ -102,7 +102,7 @@ func (r *RabbitMQ) ConsumeMessages(queueName string, handler MessageHandler) err
 }
 
 func (r *RabbitMQ) PublishMessage(ctx context.Context, routingKey string, message contracts.AmqpMessage) error {
-	log.Printf("Publishing messager with routing key: %s", routingKey)
+	log.Printf("Publishing message with routing key: %s", routingKey)
 
 	jsonMsg, err := json.Marshal(message)
 	if err != nil {

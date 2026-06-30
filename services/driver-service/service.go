@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	math "math/rand/v2"
 	pb "ride-sharing/shared/proto/driver"
 	"ride-sharing/shared/util"
@@ -22,6 +23,25 @@ func NewService() *Service {
 	return &Service{
 		drivers: make([]*driverInMap, 0),
 	}
+}
+
+func (s *Service) FindAvailableDrivers(packageType string) []string {
+	var matchingDrivers []string
+
+	log.Printf("Package type is: %v", packageType)
+
+	for _, driver := range s.drivers {
+		log.Printf("Driver package is: %v", driver.Driver.PackageSlug)
+		if driver.Driver.PackageSlug == packageType {
+			matchingDrivers = append(matchingDrivers, driver.Driver.Id)
+		}
+	}
+
+	if len(matchingDrivers) == 0 {
+		return []string{}
+	}
+
+	return matchingDrivers
 }
 
 func (s *Service) RegisterDriver(driverId string, packageSlug string) (*pb.Driver, error) {
