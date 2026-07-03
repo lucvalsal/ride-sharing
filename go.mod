@@ -16,6 +16,9 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120221211-b8f7ae30c516 // indirect
 )
 
-require go.mongodb.org/mongo-driver v1.13.1
+require (
+	github.com/google/uuid v1.6.0
+	go.mongodb.org/mongo-driver v1.13.1
+)
 
-require github.com/rabbitmq/amqp091-go v1.11.0 // indirect
+require github.com/rabbitmq/amqp091-go v1.11.0
