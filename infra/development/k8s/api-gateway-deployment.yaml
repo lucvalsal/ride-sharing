@@ -36,6 +36,11 @@ spec:
                 secretKeyRef:
                   name: rabbitmq-credentials
                   key: uri
+            - name: STRIPE_WEBHOOK_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secrets 
+                  key: stripe-webhook-key
             - name: DRIVER_SERVICE_URL
               value: "driver-service:9092"
             - name: TRIP_SERVICE_URL
