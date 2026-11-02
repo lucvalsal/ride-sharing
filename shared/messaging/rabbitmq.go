@@ -209,7 +209,7 @@ func (r *RabbitMQ) setupExchangesAndQueues() error {
 	}
 
 	if err := r.declareAndBindQueue(
-		NotifyPaymentSuccessQueue,
+		NotifyPaymentSessionCreatedQueue,
 		[]string{
 			contracts.PaymentEventSuccess,
 		},
