@@ -62,7 +62,13 @@ func main() {
 
 	log.Println("Starting RabbitMQ connection")
 
-	publisher := events.NewTripEventPublisher(rabbitmq)
+	publisherRabbitMQ, err := messaging.NewRabbitMQ(rabbitMqURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer publisherRabbitMQ.Close()
+
+	publisher := events.NewTripEventPublisher(publisherRabbitMQ)
 
 	// Start driver consumer
 	driverConsumer := events.NewDriverConsumer(rabbitmq, svc)

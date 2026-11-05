@@ -32,6 +32,8 @@ func (c *TripConsumer) Listen() error {
 			return err
 		}
 
+		log.Printf("Payment Service received message. Routing key: %s", msg.RoutingKey)
+
 		var payload messaging.PaymentTripResponseData
 		if err := json.Unmarshal(message.Data, &payload); err != nil {
 			log.Printf("Failed to unmarshal payload: %v", err)

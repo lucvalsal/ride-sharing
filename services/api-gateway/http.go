@@ -54,7 +54,7 @@ func handleTripPreview(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleTripStart(w http.ResponseWriter, r *http.Request) {
-	ctx, span := tracer.Start(r.Context(), "handleStripStart")
+	ctx, span := tracer.Start(r.Context(), "handleTripStart")
 	defer span.End()
 
 	var reqBody startTripRequest
@@ -72,14 +72,16 @@ func handleTripStart(w http.ResponseWriter, r *http.Request) {
 
 	tripService, err := grpc_clients.NewTripServiceClient()
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Failed to connect to Trip Service: %v", err)
+		http.Error(w, "Trip service unavailable", http.StatusServiceUnavailable)
+		return
 	}
 
 	defer tripService.Close()
 
 	tripStartResponse, err := tripService.Client.CreateTrip(ctx, reqBody.toProto())
 	if err != nil {
-		log.Println("Failed to start trip: %v", err)
+		log.Printf("Failed to start trip: %v", err)
 		http.Error(w, "Failed to start trip", http.StatusInternalServerError)
 		return
 	}

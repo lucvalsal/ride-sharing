@@ -101,6 +101,9 @@ func (c *driverConsumer) handleTripAccepted(ctx context.Context, tripID string, 
 		Amount:   trip.RideFare.TotalPriceInCents,
 		Currency: "USD",
 	})
+	if err != nil {
+		return err
+	}
 
 	if err := c.rabbitmq.PublishMessage(ctx, contracts.PaymentCmdCreateSession,
 		contracts.AmqpMessage{
@@ -120,6 +123,10 @@ func (c *driverConsumer) handleTripDeclined(ctx context.Context, tripID, riderID
 	trip, err := c.service.GetTripById(ctx, tripID)
 	if err != nil {
 		return err
+	}
+
+	if trip == nil {
+		return fmt.Errorf("trip was not found: %s", tripID)
 	}
 
 	newPayload := messaging.TripEventData{

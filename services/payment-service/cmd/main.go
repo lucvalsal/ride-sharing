@@ -74,7 +74,11 @@ func main() {
 
 	// Trip consumer
 	tripConsumer := events.NewTripConsumer(rabbitmq, svc)
-	go tripConsumer.Listen()
+	go func() {
+		if err := tripConsumer.Listen(); err != nil {
+			log.Printf("Failed to start payment trip consumer: %v", err)
+		}
+	}()
 
 	// Wait for shutdown signal
 	<-ctx.Done()
